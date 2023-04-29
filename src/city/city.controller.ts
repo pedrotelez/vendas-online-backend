@@ -11,6 +11,7 @@ export class CityController {
 
     @Get('/:stateId') // this notation is used to get the stateId from the URL
     async getAllCitiesByStateId(@Param('stateId') stateId: number): Promise<CityEntity[]> {
+        // @Param decorator is used to get the stateId from the URL and map to the stateId parameter
         console.log(`Fetching all cities by stateId, for stateId: ${stateId}`);
         return this.cityService.getAllCitiesByStateId(stateId);
     }

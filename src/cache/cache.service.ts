@@ -20,11 +20,11 @@ export class CacheService {
             return allData;
         }
 
-        const cities: T = await functionRequest();
+        const data: T = await functionRequest();
 
-        await this.cacheManager.set(key, cities);
+        await this.cacheManager.set(key, data);
         // console.log(`Not found in cache, for stateId: ${stateId}\n`)
 
-        return cities;
+        return data;
     }
 }
