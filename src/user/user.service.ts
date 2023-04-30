@@ -24,7 +24,15 @@ export class UserService {
             typeUser: 1,
             password: passwordHashed,
         })
+    }
 
+    async getUserByIdUsingRelations(userId: number): Promise<UserEntity> {
+        return this.userRepository.findOne({
+            where: {
+                id: userId,
+            },
+            relations: ['addresses'],
+        });
     }
 
     async getAllUsers(): Promise<UserEntity[]> {
