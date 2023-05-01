@@ -12,7 +12,7 @@ export class CacheService {
         key: string,
         functionRequest: () => Promise<T>
     ): Promise<T> {
-        
+
         const allData: T = await this.cacheManager.get(key);
 
         if (allData) {

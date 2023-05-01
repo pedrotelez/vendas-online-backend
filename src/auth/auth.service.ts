@@ -3,15 +3,20 @@ import { LoginDto } from './dtos/login.dto';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { compare } from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { ReturnLogin } from './dtos/returnLogin.dto';
+import { ReturnUserDto } from 'src/user/dtos/returnUser.dto';
+import { loginPayload } from './dtos/loginPayload.dto';
 
 @Injectable()
 export class AuthService {
 
     constructor(
         private readonly userService: UserService,
+        private jwtService: JwtService
     ) { }
 
-    async login(loginDto: LoginDto): Promise<UserEntity> {
+    async login(loginDto: LoginDto): Promise<ReturnLogin> {
         const user: UserEntity | undefined = await this.userService
             .findUserByEmail(loginDto.email)
             .catch(() => undefined);
@@ -22,7 +27,23 @@ export class AuthService {
             throw new NotFoundException('Invalid E-mail or password');
         }
 
-        return user;
+        // const payload = { username: user.username, sub: user.userId };
+
+        const payload = new loginPayload(user);
+
+        console.log(
+            {
+                // id: payload.id,
+                // typeUser: payload.typeUser
+                ...payload
+            }
+        );
+
+
+        return {
+            accessToken: this.jwtService.sign({ ...payload }),
+            user: new ReturnUserDto(user),
+        }
 
     }
 
