@@ -14,7 +14,7 @@ export class AuthService {
     constructor(
         private readonly userService: UserService,
         private jwtService: JwtService
-    ) { }
+    ) {}
 
     async login(loginDto: LoginDto): Promise<ReturnLogin> {
         const user: UserEntity | undefined = await this.userService
@@ -27,8 +27,6 @@ export class AuthService {
             throw new NotFoundException('Invalid E-mail or password');
         }
 
-        // const payload = { username: user.username, sub: user.userId };
-
         const payload = new loginPayload(user);
 
         console.log(
@@ -38,7 +36,6 @@ export class AuthService {
                 ...payload
             }
         );
-
 
         return {
             accessToken: this.jwtService.sign({ ...payload }),
