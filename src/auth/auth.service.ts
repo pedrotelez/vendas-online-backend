@@ -29,14 +29,6 @@ export class AuthService {
 
         const payload = new loginPayload(user);
 
-        console.log(
-            {
-                // id: payload.id,
-                // typeUser: payload.typeUser
-                ...payload
-            }
-        );
-
         return {
             accessToken: this.jwtService.sign({ ...payload }),
             user: new ReturnUserDto(user),

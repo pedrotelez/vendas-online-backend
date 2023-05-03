@@ -10,7 +10,7 @@ export class RolesGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
 
@@ -34,8 +34,6 @@ export class RolesGuard implements CanActivate {
     if (!loginPayload) {
       return false;
     }
-
-    console.log('authorization', authorization);
 
     if (!requiredRoles) {
       return true;
