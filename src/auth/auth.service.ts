@@ -21,6 +21,9 @@ export class AuthService {
             .findUserByEmail(loginDto.email)
             .catch(() => undefined);
 
+        // console.log(`LoginDto From request: ${JSON.stringify(loginDto)}`);
+        // console.log(`User From database: ${JSON.stringify(user)}`);
+
         const isMatch = await compare(loginDto.password, user?.password)
 
         if (!user || !isMatch) {
@@ -33,7 +36,5 @@ export class AuthService {
             accessToken: this.jwtService.sign({ ...payload }),
             user: new ReturnUserDto(user),
         }
-
     }
-
 }

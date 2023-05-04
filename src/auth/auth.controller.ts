@@ -11,8 +11,8 @@ export class AuthController {
        private readonly authService: AuthService, 
     ) {}
     
-    @UsePipes(ValidationPipe)
     @Post()
+    @UsePipes(ValidationPipe)
     async login(@Body() loginDto: LoginDto): Promise<ReturnLogin> {
         return await this.authService.login(loginDto);
     }
