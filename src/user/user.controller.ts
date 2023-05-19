@@ -12,7 +12,7 @@ export class UserController {
   @UsePipes(ValidationPipe)
   async createUser(@Body() createUser: CreateUserDto): Promise<UserEntity> {
     // variable createUser will store the data sent by the user in the body of the request
-    return this.userService.createUser(createUser)
+    return this.userService.createUser(createUser);
   }
 
   @Get()
