@@ -1,4 +1,8 @@
-import { BadGatewayException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { UserEntity } from './entities/user.entity';
 import { hash } from 'bcrypt';
@@ -7,77 +11,76 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+  ) {}
 
-    constructor(
-        @InjectRepository(UserEntity)
-        private readonly userRepository: Repository<UserEntity>,
-    ) { }
+  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
+    const user = await this.findUserByEmail(createUserDto.email).catch(
+      () => undefined,
+    );
 
-    async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
-        
-        const user = await this.findUserByEmail(createUserDto.email).catch(() => undefined);
-
-        if (user) {
-            throw new BadGatewayException('User already exists')
-        }
-        
-        const saltOrRounds = 10;
-
-        // hash password
-        const passwordHashed = await hash(createUserDto.password, saltOrRounds);
-
-        return this.userRepository.save({
-            ...createUserDto,
-            typeUser: 1,
-            password: passwordHashed,
-        })
+    if (user) {
+      throw new BadGatewayException('User already exists');
     }
 
-    async getUserByIdUsingRelations(userId: number): Promise<UserEntity> {
-        return this.userRepository.findOne({
-            where: {
-                id: userId,
-            },
-            relations: {
-                addresses: {
-                    city: {
-                        state: true,
-                    }
-                }
-            },
-        });
+    const saltOrRounds = 10;
+
+    // hash password
+    const passwordHashed = await hash(createUserDto.password, saltOrRounds);
+
+    return this.userRepository.save({
+      ...createUserDto,
+      typeUser: 1,
+      password: passwordHashed,
+    });
+  }
+
+  async getUserByIdUsingRelations(userId: number): Promise<UserEntity> {
+    return this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: {
+        addresses: {
+          city: {
+            state: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getAllUsers(): Promise<UserEntity[]> {
+    return this.userRepository.find();
+  }
+
+  async findUserById(userId: number): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`UserId: ${userId} Not Found`);
     }
 
-    async getAllUsers(): Promise<UserEntity[]> {
-        return this.userRepository.find();
+    return user;
+  }
+
+  async findUserByEmail(email: string): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`email: ${email} Not Found`);
     }
 
-    async findUserById(userId: number): Promise<UserEntity> {
-        const user = await this.userRepository.findOne({
-            where: {
-                id: userId
-            }
-        });
-
-        if (!user) {
-            throw new NotFoundException(`UserId: ${userId} Not Found`);
-        }
-
-        return user;
-    }
-
-    async findUserByEmail(email: string): Promise<UserEntity> {
-        const user = await this.userRepository.findOne({
-            where: {
-                email,
-            }
-        });
-
-        if (!user) {
-            throw new NotFoundException(`email: ${email} Not Found`);
-        }
-
-        return user;
-    }
-
+    return user;
+  }
 }

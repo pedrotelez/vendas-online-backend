@@ -35,11 +35,11 @@ import { JwtModule } from '@nestjs/jwt';
     AddressModule,
     CacheModule,
     AuthModule,
-    JwtModule
+    JwtModule,
   ],
   controllers: [],
   providers: [
-    { 
+    {
       provide: APP_GUARD,
       useClass: RolesGuard,
     },

@@ -13,21 +13,20 @@ export class RolesGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-
-    const requiredRoles = this.reflector.getAllAndOverride<UserType[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles = this.reflector.getAllAndOverride<UserType[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     if (!requiredRoles) {
       return true;
     }
 
     const { authorization } = context.switchToHttp().getRequest().headers;
-    
+
     const loginPayload: loginPayload | undefined = await this.jwtService
       .verifyAsync(authorization, {
-        secret: process.env.JWT_SECRET 
+        secret: process.env.JWT_SECRET,
       })
       .catch(() => undefined);
 

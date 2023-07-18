@@ -10,31 +10,30 @@ import { loginPayload } from './dtos/loginPayload.dto';
 
 @Injectable()
 export class AuthService {
+  constructor(
+    private readonly userService: UserService,
+    private jwtService: JwtService,
+  ) {}
 
-    constructor(
-        private readonly userService: UserService,
-        private jwtService: JwtService
-    ) {}
+  async login(loginDto: LoginDto): Promise<ReturnLogin> {
+    const user: UserEntity | undefined = await this.userService
+      .findUserByEmail(loginDto.email)
+      .catch(() => undefined);
 
-    async login(loginDto: LoginDto): Promise<ReturnLogin> {
-        const user: UserEntity | undefined = await this.userService
-            .findUserByEmail(loginDto.email)
-            .catch(() => undefined);
+    // console.log(`LoginDto From request: ${JSON.stringify(loginDto)}`);
+    // console.log(`User From database: ${JSON.stringify(user)}`);
 
-        // console.log(`LoginDto From request: ${JSON.stringify(loginDto)}`);
-        // console.log(`User From database: ${JSON.stringify(user)}`);
+    const isMatch = await compare(loginDto.password, user?.password);
 
-        const isMatch = await compare(loginDto.password, user?.password)
-
-        if (!user || !isMatch) {
-            throw new NotFoundException('Invalid E-mail or password');
-        }
-
-        const payload = new loginPayload(user);
-
-        return {
-            accessToken: this.jwtService.sign({ ...payload }),
-            user: new ReturnUserDto(user),
-        }
+    if (!user || !isMatch) {
+      throw new NotFoundException('Invalid E-mail or password');
     }
+
+    const payload = new loginPayload(user);
+
+    return {
+      accessToken: this.jwtService.sign({ ...payload }),
+      user: new ReturnUserDto(user),
+    };
+  }
 }
