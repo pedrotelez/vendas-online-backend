@@ -95,4 +95,10 @@ describe('AddressService', () => {
       service.findAddressByUserId(userEntityMock.id),
     ).rejects.toThrowError();
   });
+
+  it('should return all addresses to user', async () => {
+    const addresses = await service.findAddressByUserId(userEntityMock.id);
+
+    expect(addresses).toEqual([addressMock]);
+  });
 });

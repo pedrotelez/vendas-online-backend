@@ -35,9 +35,12 @@ export class AddressService {
             where: {
                 userId,
             },
+            relations: {
+                city: { state: true },
+            }
         });
 
-        if (!addresses) {
+        if (!addresses || addresses.length === 0) {
             throw new NotFoundException(`Addresses not found for user ${userId}`);
         }
 
